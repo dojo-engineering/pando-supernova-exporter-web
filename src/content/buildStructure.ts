@@ -1,5 +1,5 @@
 import { ColorToken, Token, TokenGroup, TokenType } from "@supernovaio/sdk-exporters";
-import { colorTokenToCSS } from "./colorToken";
+import { colorTokenToCSS } from "./colorTokens";
 
 export function findRootGroupsForTokenTypes(
   tokenGroups: TokenGroup[],

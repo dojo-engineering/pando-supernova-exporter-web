@@ -54,16 +54,16 @@ Pulsar.export(
       allTokens
     );
 
-    const tokenGroupStructureAsString = JSON.stringify(tokenGroupStructure);
-    const colorFileContent = `export const lightColors = ${tokenGroupStructureAsString}`
-    const colorFile = FileHelper.createTextFile({
+    const colorTokenGroupStructureAsString = JSON.stringify(tokenGroupStructure);
+    const colorFileContent = `export const lightThemeTokens = ${colorTokenGroupStructureAsString}`
+    const baseThemeFile = FileHelper.createTextFile({
       relativePath: "./light/",
-      fileName: "lightColors.ts",
+      fileName: "lightTheme.ts",
       content: colorFileContent,
     });
 
     const outputFiles: AnyOutputFile[] = [];
-    outputFiles.push(colorFile);
+    outputFiles.push(baseThemeFile);
 
     const allThemes = await sdk.tokens.getTokenThemes(remoteVersionIdentifier);
     const themes = allThemes.filter((theme) => theme.overriddenTokens.filter((token) => token.tokenType === TokenType.color).length > 0);
@@ -76,14 +76,14 @@ Pulsar.export(
         allTokenGroups,
         themesOverriddenTokens
       );
-      const themeGroupStructureAsString = JSON.stringify(themeGroupStructure);
-      const themeColorFileContent = `export const ${theme.name}Colors = ${themeGroupStructureAsString}`
-      const themeColorFile = FileHelper.createTextFile({
+      const themeColorTokenGroupStructureAsString = JSON.stringify(themeGroupStructure);
+      const themeColorFileContent = `export const ${theme.name}ThemeTokens = ${themeColorTokenGroupStructureAsString}`
+      const themeFile = FileHelper.createTextFile({
         relativePath: `./${theme.name}/`,
-        fileName: `${theme.name}Colors.ts`,
+        fileName: `${theme.name}Theme.ts`,
         content: themeColorFileContent,
       });
-      outputFiles.push(themeColorFile);
+      outputFiles.push(themeFile);
     }
     
     themes.forEach((theme) => generateThemedColorFiles(theme));
