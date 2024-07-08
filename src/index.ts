@@ -14,6 +14,7 @@ import {
   buildRootGroupStructures,
   findRootGroupsForTokenTypes,
 } from "./content/buildStructure";
+import { modifyThemeContent } from "./content/utils";
 
 /**
  * Export entrypoint.
@@ -77,11 +78,11 @@ Pulsar.export(
         themesOverriddenTokens
       );
       const themeColorTokenGroupStructureAsString = JSON.stringify(themeGroupStructure);
-      const themeColorFileContent = `export const ${theme.name}ThemeTokens = ${themeColorTokenGroupStructureAsString}`
+      const themeColorFileContent = `import { lightThemeTokens } from "../light/lightTheme"; export const ${theme.name}ThemeTokens = ${themeColorTokenGroupStructureAsString}`
       const themeFile = FileHelper.createTextFile({
         relativePath: `./${theme.name}/`,
         fileName: `${theme.name}Theme.ts`,
-        content: themeColorFileContent,
+        content: modifyThemeContent(themeColorFileContent),
       });
       outputFiles.push(themeFile);
     }
