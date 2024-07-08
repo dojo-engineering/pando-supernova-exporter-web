@@ -11,5 +11,6 @@
     "executable": "/dist/build.js",
     "engine": "latest",
     "tags": [
+        "[ANYTHING_YOU_WANT, like 'Tokens', 'Assets' etc.]"
     ]
 }
