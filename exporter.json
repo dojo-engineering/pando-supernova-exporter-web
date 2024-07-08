@@ -1,16 +1,15 @@
 {
     "id": "dojo.exporter-web-typescript",
-    "name": "Web Typescript Exporter",
-    "description": "Export your design system data into [PLATFORM / TECHNOLOGY]",
+    "name": "Pando Web Token Exporter",
+    "description": "Export your design system data into typescript tokens for use in pando web",
     "author": "maemastersdojo",
     "organization": "dojo",
     "homepage": "[COMPANY_WEBSITE or delete]",
     "version": "1.0.0",
-    "usesBrands": true,
-    "usesThemes": true,
+    "usesBrands": false,
+    "usesThemes": false,
     "executable": "/dist/build.js",
     "engine": "latest",
     "tags": [
-        "[ANYTHING_YOU_WANT, like 'Tokens', 'Assets' etc.]"
     ]
 }
