@@ -6,27 +6,29 @@ This exporter will export design tokens for use in pando-web.
 
 ## Example of Output
 
-This exporter will generate output files per theme. An example of colours for each theme:
+This exporter will generate one output file for: color, density, and typography. 
 
-```css
-/* This file was automatically generated. Do not modify manually. */
-
-export const colors = {
-   bg: {
-      base: {
-        default: "#f1f1ec",
-        secondary: "#fefefe",
-      },
-      control: {
+```ts
+export const lightColor = {
+  bg: {
+    control: {
+      default: "#fefefe",
+      hover: "#fefefe",
+      focus: "#fefefe",
+      pressed: "#f1f1ec",
+      disabled: "#f1f1ec",
+      selected: {
         default: "#fefefe",
-        hover: "#fefefe",
-      },
-   },
-  text: {
-      base: {
-        default: "#180f06",
-        secondary: "#645e58",
-      },
-  },
-}
+        hover: "#645e58",
+        focus: "#ffc0cb",
+        pressed: "#f1f1ec",
+        disabled: "#f1f1ec",
+        counter: "#e0e0dc",
+      }
+    }
+  }
+};
 ```
+
+## To do
+Implement panes, and asset export (e.g. iconography). Filter out the (-)Do not use tokens. 

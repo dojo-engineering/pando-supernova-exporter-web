@@ -2,6 +2,9 @@ import { NamingHelper, CSSHelper, ColorFormat, StringCase } from "@supernovaio/e
 import { ColorToken, Token, TokenGroup } from "@supernovaio/sdk-exporters"
 
 export function colorTokenToCSS(token: ColorToken, mappedTokens: Map<string, Token>, tokenGroups: Array<TokenGroup>): string | null {
+  if(!/^[a-zA-Z]*$/.test(token.name)){
+    return null;
+  }
   const value = CSSHelper.colorTokenValueToCSS(token.value, mappedTokens, {
     allowReferences: false,
     decimals: 3,
@@ -16,7 +19,7 @@ export function colorTokenToCSS(token: ColorToken, mappedTokens: Map<string, Tok
   return `${value}`
 }
 
-function tokenVariableName(token: Token, tokenGroups: Array<TokenGroup>): string {
-  const parent = tokenGroups.find((group) => group.id === token.parentGroupId)!
+export function tokenVariableName(token: Token, tokenGroups?: Array<TokenGroup>): string {
+  const parent = tokenGroups?.find((group) => group.id === token.parentGroupId)!
   return NamingHelper.codeSafeVariableNameForToken(token, StringCase.camelCase, parent, null)
 }

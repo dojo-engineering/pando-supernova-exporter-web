@@ -10,11 +10,12 @@ import {
   TokenTheme,
 } from "@supernovaio/sdk-exporters";
 import { ExporterConfiguration } from "../config";
+import { buildRootGroupStructures } from "./content/buildStructure";
 import {
-  buildRootGroupStructures,
-  findRootGroupsForTokenTypes,
-} from "./content/buildStructure";
-import { modifyThemeContent } from "./content/utils";
+  modifyColorContent,
+  modifyDensityContent,
+  processThemeName,
+} from "./content/utils";
 
 /**
  * Export entrypoint.
@@ -30,65 +31,129 @@ Pulsar.export(
       designSystemId: context.dsId,
       versionId: context.versionId,
     };
-
-    let allTokens: Token[] = await sdk.tokens.getTokens(
-      remoteVersionIdentifier
-    );
-    let allTokenGroups: TokenGroup[] = await sdk.tokens.getTokenGroups(
+    //setup, get tokens, groups, themes
+    const allTokens: Token[] = await sdk.tokens.getTokens(
       remoteVersionIdentifier
     );
 
-    allTokenGroups = allTokenGroups.filter(
-      (group) =>
-        group.name !== "brandAlias" && group.name !== "systemRamps"
+    const inputTokenGroups: TokenGroup[] = await sdk.tokens.getTokenGroups(
+      remoteVersionIdentifier
     );
-    allTokenGroups = allTokenGroups.filter((group) => group.tokenIds.length > 0 || group.childrenIds.length > 0);
-    allTokenGroups = allTokenGroups.filter((group) => /^[a-zA-Z0-9]*$/.test(group.name));
-
-    allTokens = allTokens.filter((token) => /^[a-zA-Z0-9]*$/.test(token.name));
-
-    const rootTokenGroups = findRootGroupsForTokenTypes(allTokenGroups);
-
-    const tokenGroupStructure = buildRootGroupStructures(
-      rootTokenGroups,
-      allTokenGroups,
-      allTokens
-    );
-
-    const colorTokenGroupStructureAsString = JSON.stringify(tokenGroupStructure);
-    const colorFileContent = `export const lightThemeTokens = ${colorTokenGroupStructureAsString}`
-    const baseThemeFile = FileHelper.createTextFile({
-      relativePath: "./light/",
-      fileName: "lightTheme.ts",
-      content: colorFileContent,
-    });
-
-    const outputFiles: AnyOutputFile[] = [];
-    outputFiles.push(baseThemeFile);
 
     const allThemes = await sdk.tokens.getTokenThemes(remoteVersionIdentifier);
-    const themes = allThemes.filter((theme) => theme.overriddenTokens.filter((token) => token.tokenType === TokenType.color).length > 0);
-    function generateThemedColorFiles(
+
+    const allTokenGroups = inputTokenGroups.filter(
+      (group) =>
+        group.tokenIds.length > 0 ||
+        (group.childrenIds.length > 0 && /^[a-zA-Z]*$/.test(group.name))
+    );
+    const tokenGroupIdsToOmit = allTokenGroups
+      .filter(
+        (group) =>
+          group.name.toLowerCase() === "brandalias" ||
+          group.name.toLowerCase() === "systemramps" ||
+          group.name.toLowerCase() === "system" ||
+          group.name.toLowerCase() === "systemtypography" ||
+          group.name.toLowerCase() === "figma-inline-links"
+      )
+      .map((group) => group.id);
+
+    const tokens = allTokens.filter((token) => /^[a-zA-Z]*$/.test(token.name));
+    const tokenGroups = allTokenGroups.filter(
+      (group) => !tokenGroupIdsToOmit.includes(group.id)
+    );
+
+    //build theme variations of tokens
+    const colorThemes = allThemes.filter(
+      (theme) =>
+        theme.overriddenTokens.filter(
+          (token) => token.tokenType === TokenType.color
+        ).length > 0
+    );
+    const densityTypographyThemes = allThemes.filter((theme) =>
+      processThemeName(theme.name).includes("dense")
+    );
+
+    //initialise outputFiles
+    const outputFiles: AnyOutputFile[] = [];
+
+    //build color
+    const colorGroupStructure = buildRootGroupStructures(
+      tokenGroups,
+      tokens,
+      TokenType.color
+    );
+    const colorGroupStructureAsString = JSON.stringify(colorGroupStructure);
+    let colorString = `export const lightColor = ${colorGroupStructureAsString}`;
+    colorThemes.forEach(
+      (theme) =>
+        (colorString = colorString.concat(
+          `\n${generateThemedString(theme, "Color", TokenType.color)}`
+        ))
+    );
+    outputFiles.push(buildOutputFile("color", colorString));
+
+    // build density
+    const densityGroupStructure = buildRootGroupStructures(
+      tokenGroups,
+      tokens,
+      TokenType.dimension
+    );
+    const densityGroupStructureAsString = JSON.stringify(densityGroupStructure);
+    let densityString = `export const density = ${densityGroupStructureAsString}`;
+    densityTypographyThemes.forEach(
+      (theme) =>
+        (densityString = densityString.concat(
+          `\n${generateThemedString(theme, "density", TokenType.dimension)}`
+        ))
+    );
+    outputFiles.push(buildOutputFile("density", densityString));
+
+    //build typography
+    const typographyGroupStructure = buildRootGroupStructures(
+      tokenGroups,
+      tokens,
+      TokenType.typography
+    );
+    const typographyGroupStructureAsString = JSON.stringify(
+      typographyGroupStructure
+    );
+    let typographyString = `export const typography = ${typographyGroupStructureAsString}`;
+    densityTypographyThemes.forEach(
+      (theme) =>
+        (typographyString = typographyString.concat(
+          `\n${generateThemedString(theme, "Typography", TokenType.typography)} satisfies typeof typography`
+        ))
+    );
+    outputFiles.push(buildOutputFile("typography", typographyString));
+    //make output files from my strings
+    function buildOutputFile(name: string, content: string) {
+      return FileHelper.createTextFile({
+        relativePath: "./",
+        fileName: `${name}.ts`,
+        content: content,
+      });
+    }
+
+    //function to build theme variations of tokens
+    function generateThemedString(
       theme: TokenTheme,
+      name: string,
+      tokenType: TokenType
     ) {
       const themesOverriddenTokens = theme.overriddenTokens;
       const themeGroupStructure = buildRootGroupStructures(
-        rootTokenGroups,
-        allTokenGroups,
-        themesOverriddenTokens
+        tokenGroups,
+        themesOverriddenTokens,
+        tokenType
       );
-      const themeColorTokenGroupStructureAsString = JSON.stringify(themeGroupStructure);
-      const themeColorFileContent = `import { lightThemeTokens } from "../light/lightTheme"; export const ${theme.name}ThemeTokens = ${themeColorTokenGroupStructureAsString}`
-      const themeFile = FileHelper.createTextFile({
-        relativePath: `./${theme.name}/`,
-        fileName: `${theme.name}Theme.ts`,
-        content: modifyThemeContent(themeColorFileContent),
-      });
-      outputFiles.push(themeFile);
+      const themeColorTokenGroupStructureAsString =
+        JSON.stringify(themeGroupStructure);
+      const themeColorFileContent = `export const ${processThemeName(
+        theme.name
+      )}${name} = ${themeColorTokenGroupStructureAsString}`;
+      return themeColorFileContent;
     }
-    
-    themes.forEach((theme) => generateThemedColorFiles(theme));
-
     return outputFiles;
   }
 );
