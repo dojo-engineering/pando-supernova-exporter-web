@@ -1,6 +1,6 @@
 {
-    "name": "@[COMPANY_NAME]/[EXPORTER_NAME]",
-    "version": "1.0.0",
+    "name": "@dojo-engineering/pando-web-token-exporter",
+    "version": "2.0.0",
     "description": "[DESCRIPTION]",
     "main": "index.js",
     "scripts": {
