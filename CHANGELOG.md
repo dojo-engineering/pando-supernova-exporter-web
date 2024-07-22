@@ -8,3 +8,6 @@ Initial exporter version with colors to test import into pando-web
 
 ## 2.0.0 
 Token exporter without panes or assets, to follow. Subject to changes.
+
+## 3.0.0 
+Updates to naming in outputs, removed elevation tokens.

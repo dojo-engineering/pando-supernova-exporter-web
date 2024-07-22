@@ -7,7 +7,7 @@ export function buildTypographyToken(token: TypographyToken, mappedTokens): {} |
     const fontWeight = token.value.fontWeight.text;
     const fontSize = `${token.value.fontSize.measure}rem`;
     const lineHeight = `${token.value.lineHeight?.measure}%`;
-    const textCase = token.value.textCase.value;
+    const textTransform = token.value.textCase.value;
     const textDecoration = token.value.textDecoration.value;
     const letterSpacing = `${token.value.letterSpacing.measure}%`;
     const paragraphSpacing = `${token.value.paragraphSpacing.measure}px`;
@@ -18,7 +18,7 @@ export function buildTypographyToken(token: TypographyToken, mappedTokens): {} |
         fontWeight,
         fontSize,
         lineHeight,
-        textCase,
+        textTransform,
         textDecoration,
         letterSpacing,
         paragraphSpacing,

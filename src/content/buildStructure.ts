@@ -19,7 +19,6 @@ export function findRootGroupsForTokenTypes(
       "padding",
       "border",
       "radius",
-      "elevation",
       "gap",
     ];
     const rootTokenGroups = tokenGroups.filter((group) =>

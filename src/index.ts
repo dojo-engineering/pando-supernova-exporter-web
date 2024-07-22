@@ -84,19 +84,19 @@ Pulsar.export(
       TokenType.color
     );
     const colorGroupStructureAsString = JSON.stringify(colorGroupStructure);
-    let colorString = `export const lightColor = ${colorGroupStructureAsString}`;
+    let colorString = `export const light = ${colorGroupStructureAsString}`;
     colorThemes.forEach(
       (theme) =>
         (colorString = colorString.concat(
-          `\n${generateThemedString(theme, "Color", TokenType.color)}`
+          `\n${generateThemedString(theme, "palette", TokenType.color)}`
         ))
     );
     outputFiles.push(buildOutputFile("color", colorString));
 
     // build density
     const densityGroupStructure = buildRootGroupStructures(
-      tokenGroups,
-      tokens,
+      allTokenGroups,
+      allTokens,
       TokenType.dimension
     );
     const densityGroupStructureAsString = JSON.stringify(densityGroupStructure);
@@ -151,7 +151,7 @@ Pulsar.export(
         JSON.stringify(themeGroupStructure);
       const themeColorFileContent = `export const ${processThemeName(
         theme.name
-      )}${name} = ${themeColorTokenGroupStructureAsString}`;
+      )} = ${themeColorTokenGroupStructureAsString}`;
       return themeColorFileContent;
     }
     return outputFiles;
