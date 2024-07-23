@@ -117,12 +117,12 @@ Pulsar.export(
       typographyGroupStructure
     );
     let typographyString = `export const typography = ${typographyGroupStructureAsString}`;
-    densityTypographyThemes.forEach(
-      (theme) =>
-      (typographyString = typographyString.concat(
-        `\n${generateThemedString(theme, "Typography", TokenType.typography)} satisfies typeof typography`
-      ))
-    );
+    // densityTypographyThemes.forEach(
+    //   (theme) =>
+    //   (typographyString = typographyString.concat(
+    //     `\n${generateThemedString(theme, "Typography", TokenType.typography)} satisfies typeof typography`
+    //   ))
+    // );
     outputFiles.push(buildOutputFile("typography", typographyString));
     //make output files from my strings
     function buildOutputFile(name: string, content: string) {

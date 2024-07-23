@@ -9,7 +9,6 @@ import {
 import { colorTokenToCSS } from "./colorTokens";
 import { buildDimensionToken } from "./dimensions";
 import { buildTypographyToken } from "./typographyTokens";
-import { removeDeprecatedTokens } from "./utils";
 
 export function findRootGroupsForTokenTypes(
   tokenGroups: TokenGroup[],
@@ -52,19 +51,14 @@ export function buildGroupStructure(
   if (group.tokenIds.length === 0 && group.childrenIds.length === 0) {
     return null;
   }
-  const tokenGroupsNamesToOmit = ["brandAlias", "systemRamps", "system", "systemTypography", "figma-inline-links",];
+  const tokenGroupsNamesToOmit = ["brandAlias", "systemRamps", "system", "systemTypography", "figma-inline-links"];
   if (tokenGroupsNamesToOmit.includes(group.name.toLowerCase())) {
-    return null;
-  }
-  if (group.name.includes("_")) {
     return null;
   }
   const mappedTokens = new Map(allTokens.map((token) => [token.id, token]));
   const structure: Object = {};
 
-  const groupChildTokenIds = removeDeprecatedTokens(group.tokenIds, allTokens);
-
-  groupChildTokenIds.forEach((tokenId) => {
+  group.tokenIds.forEach((tokenId) => {
     const token = findTokenById(tokenId, allTokens);
     if (token && token.tokenType === TokenType.color && /^[a-zA-Z]*$/.test(token.name)) {
       structure[token.name] = colorTokenToCSS(
@@ -84,7 +78,7 @@ export function buildGroupStructure(
   group.childrenIds.forEach((childGroupId) => {
     const tokenGroupsNamesToOmit = ["brandalias", "systemramps", "system", "systemtypography", "figma-inline-links"];
     const childGroup = allGroups.find((g) => g.id === childGroupId);
-    if (childGroup && childGroup.childrenIds.length > 0 && !tokenGroupsNamesToOmit.includes(childGroup.name.toLowerCase()) && !childGroup.name.includes("_")) {
+    if (childGroup && childGroup.childrenIds.length > 0 && !tokenGroupsNamesToOmit.includes(childGroup.name.toLowerCase())) {
       structure[childGroup.name] = buildGroupStructure(
         childGroup,
         allGroups,
