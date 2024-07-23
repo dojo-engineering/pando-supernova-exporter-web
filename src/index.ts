@@ -12,8 +12,6 @@ import {
 import { ExporterConfiguration } from "../config";
 import { buildRootGroupStructures } from "./content/buildStructure";
 import {
-  modifyColorContent,
-  modifyDensityContent,
   processThemeName,
 } from "./content/utils";
 
