@@ -87,11 +87,11 @@ Pulsar.export(
     let colorString = `export const light = ${colorGroupStructureAsString}`;
     colorThemes.forEach(
       (theme) =>
-        (colorString = colorString.concat(
-          `\n${generateThemedString(theme, "palette", TokenType.color)}`
-        ))
+      (colorString = colorString.concat(
+        `\n${generateThemedString(theme, "palette", TokenType.color)} satisfies typeof light`
+      ))
     );
-    outputFiles.push(buildOutputFile("color", colorString));
+    outputFiles.push(buildOutputFile("palette", colorString));
 
     // build density
     const densityGroupStructure = buildRootGroupStructures(
@@ -103,9 +103,9 @@ Pulsar.export(
     let densityString = `export const density = ${densityGroupStructureAsString}`;
     densityTypographyThemes.forEach(
       (theme) =>
-        (densityString = densityString.concat(
-          `\n${generateThemedString(theme, "density", TokenType.dimension)}`
-        ))
+      (densityString = densityString.concat(
+        `\n${generateThemedString(theme, "density", TokenType.dimension)} satisfies typeof density`
+      ))
     );
     outputFiles.push(buildOutputFile("density", densityString));
 
@@ -121,9 +121,9 @@ Pulsar.export(
     let typographyString = `export const typography = ${typographyGroupStructureAsString}`;
     densityTypographyThemes.forEach(
       (theme) =>
-        (typographyString = typographyString.concat(
-          `\n${generateThemedString(theme, "Typography", TokenType.typography)} satisfies typeof typography`
-        ))
+      (typographyString = typographyString.concat(
+        `\n${generateThemedString(theme, "Typography", TokenType.typography)} satisfies typeof typography`
+      ))
     );
     outputFiles.push(buildOutputFile("typography", typographyString));
     //make output files from my strings
