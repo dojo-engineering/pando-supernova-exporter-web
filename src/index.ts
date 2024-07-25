@@ -52,7 +52,8 @@ Pulsar.export(
           group.name.toLowerCase() === "systemramps" ||
           group.name.toLowerCase() === "system" ||
           group.name.toLowerCase() === "systemtypography" ||
-          group.name.toLowerCase() === "figma-inline-links"
+          group.name.toLowerCase() === "figma-inline-links" ||
+          group.name.toLowerCase() === "systemHeight[FigmaOnly]"
       )
       .map((group) => group.id);
 
