@@ -14,6 +14,7 @@ import { buildRootGroupStructures } from "./content/buildStructure";
 import {
   processThemeName,
 } from "./content/utils";
+import { buildElevationTokens, buildShadowColorValues } from "./content/buildElevationTokens";
 
 /**
  * Export entrypoint.
@@ -124,6 +125,15 @@ Pulsar.export(
     //     `\n${generateThemedString(theme, "Typography", TokenType.typography)} satisfies typeof typography`
     //   ))
     // );
+
+    const elevationTokens = buildElevationTokens(allTokens, allTokenGroups, allThemes);
+    const elevationTokensAsString = JSON.stringify(elevationTokens);
+    let elevationString = `export const elevation = ${elevationTokensAsString}`;
+    const shadowColorAsString = buildShadowColorValues(allTokens);
+    elevationString = elevationString.concat(`\nexport const shadowColors = ${shadowColorAsString}`);
+    outputFiles.push(buildOutputFile("elevation", elevationString));
+
+
     outputFiles.push(buildOutputFile("typography", typographyString));
     //make output files from my strings
     function buildOutputFile(name: string, content: string) {
