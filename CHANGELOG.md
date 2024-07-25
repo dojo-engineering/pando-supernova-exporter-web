@@ -18,4 +18,8 @@ Updates to naming in outputs, removed elevation tokens.
 
 ## 4.0.0
 
-removes deprecated tokens, converts fontsize from rem to px, adds elevation tokens back, adds other dimension tokens.
+removes deprecated tokens, converts fontsize from rem to px
+
+## 5.0.0
+
+adds elevation tokens back, adds other dimension tokens.
