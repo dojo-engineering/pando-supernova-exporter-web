@@ -16,10 +16,12 @@ export function findRootGroupsForTokenTypes(
 ) {
   if (tokenType === TokenType.dimension) {
     const staticRootGroups = [
-      "padding",
       "border",
       "radius",
+      "padding",
+      "radius",
       "gap",
+      "window",
     ];
     const rootTokenGroups = tokenGroups.filter((group) =>
       staticRootGroups.includes(group.name)
@@ -45,13 +47,14 @@ export function buildGroupStructure(
   allGroups: TokenGroup[],
   allTokens: Token[]
 ): Object | null {
-  if (!group || !allGroups || !allTokens || group.childrenIds.length === 0) {
+  if (!group || !allGroups || !allTokens || group.childrenIds.length === 0 || group.name.includes("[]")) {
     return null;
   }
   if (group.tokenIds.length === 0 && group.childrenIds.length === 0) {
     return null;
   }
-  const tokenGroupsNamesToOmit = ["brandAlias", "systemRamps", "system", "systemTypography", "figma-inline-links"];
+  const tokenGroupsNamesToOmit = ["brandAlias", "systemRamps", "system", "systemTypography", "figma-inline-links", "systemHeight[FigmaOnly]"
+  ];
   if (tokenGroupsNamesToOmit.includes(group.name.toLowerCase())) {
     return null;
   }
@@ -67,7 +70,7 @@ export function buildGroupStructure(
         allGroups
       );
     }
-    if (token && token.tokenType === TokenType.dimension) {
+    if (token && token.tokenType === TokenType.dimension && !token.name.includes("sys")) {
       structure[token.name] = buildDimensionToken(token as DimensionToken);
     }
     else if (token && token.tokenType === TokenType.typography) {
@@ -76,7 +79,7 @@ export function buildGroupStructure(
   });
 
   group.childrenIds.forEach((childGroupId) => {
-    const tokenGroupsNamesToOmit = ["brandalias", "systemramps", "system", "systemtypography", "figma-inline-links"];
+    const tokenGroupsNamesToOmit = ["brandalias", "systemramps", "system", "systemtypography", "figma-inline-links", "systemHeight[FigmaOnly]"];
     const childGroup = allGroups.find((g) => g.id === childGroupId);
     if (childGroup && childGroup.childrenIds.length > 0 && !tokenGroupsNamesToOmit.includes(childGroup.name.toLowerCase())) {
       structure[childGroup.name] = buildGroupStructure(
@@ -98,7 +101,7 @@ export function buildRootGroupStructures(
   // eslint-disable-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/explicit-function-return-type
   const rootGroups = findRootGroupsForTokenTypes(allGroups, tokenType);
   const rootGroupStructures: Object = {};
-  const tokenGroupsNamesToOmit = ["brandalias", "systemramps", "system", "systemtypography", "figma-inline-links"];
+  const tokenGroupsNamesToOmit = ["brandalias", "systemramps", "system", "systemtypography", "figma-inline-links", "systemHeight[FigmaOnly]"];
   const allTokensFiltered = allTokens.filter((token) => token.tokenType === tokenType);
   const allGroupsFiltered = allGroups.filter((group) => group.tokenType === tokenType);
 
