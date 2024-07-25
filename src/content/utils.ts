@@ -22,7 +22,7 @@ export function processThemeName(themeName: string): string {
 }
 
 export function filterOutUnecessaryGroups(tokenGroups: TokenGroup[]) {
-    const tokenGroupsNamesToOmit = ["brandalias", "systemramps", "system", "systemtypography", "figma-inline-links"];
+    const tokenGroupsNamesToOmit = ["brandalias", "systemramps", "system", "systemtypography", "figma-inline-links", "systemHeight[FigmaOnly]"];
     const filteredTokenGroups = tokenGroups.filter((tokenGroup) => !tokenGroupsNamesToOmit.includes(tokenGroup.name.toLowerCase()));
     return filteredTokenGroups;
 }
