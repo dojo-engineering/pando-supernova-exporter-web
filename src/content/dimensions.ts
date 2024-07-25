@@ -1,8 +1,8 @@
-import {DimensionToken,} from "@supernovaio/sdk-exporters";
+import { DimensionToken, } from "@supernovaio/sdk-exporters";
 import { tokenVariableName } from "./colorTokens";
 
 export function buildDimensionToken(token: DimensionToken): {} {
-    const borderToken: Object ={};
-    const borderTokenValue = `${token.value.measure}px`;
-    return borderToken[tokenVariableName(token)] = borderTokenValue;
+    const dimensionToken: Object = {};
+    const dimensionTokenValue = `${token.value.measure}px`;
+    return dimensionToken[tokenVariableName(token)] = dimensionTokenValue;
 }

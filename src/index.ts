@@ -12,10 +12,9 @@ import {
 import { ExporterConfiguration } from "../config";
 import { buildRootGroupStructures } from "./content/buildStructure";
 import {
-  modifyColorContent,
-  modifyDensityContent,
   processThemeName,
 } from "./content/utils";
+import { buildElevationTokens, buildShadowColorValues } from "./content/buildElevationTokens";
 
 /**
  * Export entrypoint.
@@ -54,7 +53,8 @@ Pulsar.export(
           group.name.toLowerCase() === "systemramps" ||
           group.name.toLowerCase() === "system" ||
           group.name.toLowerCase() === "systemtypography" ||
-          group.name.toLowerCase() === "figma-inline-links"
+          group.name.toLowerCase() === "figma-inline-links" ||
+          group.name.toLowerCase() === "systemHeight[FigmaOnly]"
       )
       .map((group) => group.id);
 
@@ -84,28 +84,28 @@ Pulsar.export(
       TokenType.color
     );
     const colorGroupStructureAsString = JSON.stringify(colorGroupStructure);
-    let colorString = `export const lightColor = ${colorGroupStructureAsString}`;
+    let colorString = `export const light = ${colorGroupStructureAsString}`;
     colorThemes.forEach(
       (theme) =>
-        (colorString = colorString.concat(
-          `\n${generateThemedString(theme, "Color", TokenType.color)}`
-        ))
+      (colorString = colorString.concat(
+        `\n${generateThemedString(theme, "palette", TokenType.color)} satisfies typeof light`
+      ))
     );
-    outputFiles.push(buildOutputFile("color", colorString));
+    outputFiles.push(buildOutputFile("palette", colorString));
 
     // build density
     const densityGroupStructure = buildRootGroupStructures(
-      tokenGroups,
-      tokens,
+      allTokenGroups,
+      allTokens,
       TokenType.dimension
     );
     const densityGroupStructureAsString = JSON.stringify(densityGroupStructure);
     let densityString = `export const density = ${densityGroupStructureAsString}`;
     densityTypographyThemes.forEach(
       (theme) =>
-        (densityString = densityString.concat(
-          `\n${generateThemedString(theme, "density", TokenType.dimension)}`
-        ))
+      (densityString = densityString.concat(
+        `\n${generateThemedString(theme, "density", TokenType.dimension)} satisfies typeof density`
+      ))
     );
     outputFiles.push(buildOutputFile("density", densityString));
 
@@ -119,12 +119,21 @@ Pulsar.export(
       typographyGroupStructure
     );
     let typographyString = `export const typography = ${typographyGroupStructureAsString}`;
-    densityTypographyThemes.forEach(
-      (theme) =>
-        (typographyString = typographyString.concat(
-          `\n${generateThemedString(theme, "Typography", TokenType.typography)} satisfies typeof typography`
-        ))
-    );
+    // densityTypographyThemes.forEach(
+    //   (theme) =>
+    //   (typographyString = typographyString.concat(
+    //     `\n${generateThemedString(theme, "Typography", TokenType.typography)} satisfies typeof typography`
+    //   ))
+    // );
+
+    const elevationTokens = buildElevationTokens(allTokens, allTokenGroups, allThemes);
+    const elevationTokensAsString = JSON.stringify(elevationTokens);
+    let elevationString = `export const elevation = ${elevationTokensAsString}`;
+    const shadowColorAsString = buildShadowColorValues(allTokens);
+    elevationString = elevationString.concat(`\nexport const shadowColors = ${shadowColorAsString}`);
+    outputFiles.push(buildOutputFile("elevation", elevationString));
+
+
     outputFiles.push(buildOutputFile("typography", typographyString));
     //make output files from my strings
     function buildOutputFile(name: string, content: string) {
@@ -151,7 +160,7 @@ Pulsar.export(
         JSON.stringify(themeGroupStructure);
       const themeColorFileContent = `export const ${processThemeName(
         theme.name
-      )}${name} = ${themeColorTokenGroupStructureAsString}`;
+      )} = ${themeColorTokenGroupStructureAsString}`;
       return themeColorFileContent;
     }
     return outputFiles;
