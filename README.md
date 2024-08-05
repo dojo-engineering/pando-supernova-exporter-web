@@ -6,7 +6,7 @@ This exporter will export design tokens for use in pando-web.
 
 ## Example of Output
 
-This exporter will generate one output file for: color, density, and typography. 
+This exporter will generate one output file for: color, density, and typography.
 
 ```ts
 export const lightColor = {
@@ -24,11 +24,12 @@ export const lightColor = {
         pressed: "#f1f1ec",
         disabled: "#f1f1ec",
         counter: "#e0e0dc",
-      }
-    }
-  }
+      },
+    },
+  },
 };
 ```
 
 ## To do
-Implement panes, and asset export (e.g. iconography). Filter out the (-)Do not use tokens. 
+
+General tidy up of exporter

@@ -23,3 +23,8 @@ removes deprecated tokens, converts fontsize from rem to px
 ## 5.0.0
 
 adds elevation tokens back, adds other dimension tokens.
+
+## 6.0.0
+
+removing elevation temporarily, adds generated token.ts file, adds exports onto
+palette and density, reformat typography export to the system tokens only.
