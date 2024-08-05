@@ -19,6 +19,7 @@ import { buildElevationTokens, buildShadowColorValues } from "./content/buildEle
 import { buildTypographyTokenStructure } from "./content/buildTypographyTokens";
 import { buildFullTypographyStructure } from "./content/buildTypographyStructure";
 import { findTypographyValues } from "./content/findTypographyValues";
+import { appendToDensityFile, appendToPaletteFile } from "./content/appendToOutputfFiles";
 
 /**
  * Export entrypoint.
@@ -96,7 +97,7 @@ Pulsar.export(
         `\n${generateThemedString(theme, "palette", TokenType.color)} satisfies typeof light`
       ))
     );
-    outputFiles.push(buildOutputFile("palette", colorString));
+    outputFiles.push(buildOutputFile("palette", appendToPaletteFile(colorString)));
 
     // build density
     const densityGroupStructure = buildRootGroupStructures(
@@ -112,7 +113,7 @@ Pulsar.export(
         `\n${generateThemedString(theme, "density", TokenType.dimension)} satisfies typeof density`
       ))
     );
-    outputFiles.push(buildOutputFile("density", densityString));
+    outputFiles.push(buildOutputFile("density", appendToDensityFile(densityString)));
 
     // //build typography
     // const typographyTokens = tokens.filter((token) => token.tokenType === TokenType.typography) as TypographyToken[];
