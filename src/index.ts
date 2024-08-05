@@ -8,6 +8,7 @@ import {
   Token,
   TokenType,
   TokenTheme,
+  TypographyToken,
 } from "@supernovaio/sdk-exporters";
 import { ExporterConfiguration } from "../config";
 import { buildRootGroupStructures } from "./content/buildStructure";
@@ -15,6 +16,9 @@ import {
   processThemeName,
 } from "./content/utils";
 import { buildElevationTokens, buildShadowColorValues } from "./content/buildElevationTokens";
+import { buildTypographyTokenStructure } from "./content/buildTypographyTokens";
+import { buildFullTypographyStructure } from "./content/buildTypographyStructure";
+import { findTypographyValues } from "./content/findTypographyValues";
 
 /**
  * Export entrypoint.
@@ -54,11 +58,12 @@ Pulsar.export(
           group.name.toLowerCase() === "system" ||
           group.name.toLowerCase() === "systemtypography" ||
           group.name.toLowerCase() === "figma-inline-links" ||
-          group.name.toLowerCase() === "systemHeight[FigmaOnly]"
+          group.name.toLowerCase() === "systemHeight[FigmaOnly]" ||
+          group.name.toLowerCase() === "_deprecatedInverse"
       )
       .map((group) => group.id);
 
-    const tokens = allTokens.filter((token) => /^[a-zA-Z]*$/.test(token.name));
+    const tokens = allTokens.filter((token) => /^[a-zA-Z]*$/.test(token.name) && !token.name.includes("deprecated"));
     const tokenGroups = allTokenGroups.filter(
       (group) => !tokenGroupIdsToOmit.includes(group.id)
     );
@@ -109,16 +114,13 @@ Pulsar.export(
     );
     outputFiles.push(buildOutputFile("density", densityString));
 
-    //build typography
-    const typographyGroupStructure = buildRootGroupStructures(
-      tokenGroups,
-      tokens,
-      TokenType.typography
-    );
-    const typographyGroupStructureAsString = JSON.stringify(
-      typographyGroupStructure
-    );
-    let typographyString = `export const typography = ${typographyGroupStructureAsString}`;
+    // //build typography
+    // const typographyTokens = tokens.filter((token) => token.tokenType === TokenType.typography) as TypographyToken[];
+
+    // const typTokenStructure = buildFullTypographyStructure(allTokenGroups, typographyTokens, false);
+    // const typTokenStructureAsString = JSON.stringify(typTokenStructure);
+
+    // let typographyString = `const typography = ${typTokenStructureAsString}`;
     // densityTypographyThemes.forEach(
     //   (theme) =>
     //   (typographyString = typographyString.concat(
@@ -126,14 +128,20 @@ Pulsar.export(
     //   ))
     // );
 
+    const typographyValues = findTypographyValues(allTokens, allTokenGroups);
+    const typographyValuesAsString = JSON.stringify(typographyValues);
+    let typographyString = (`\nexport const typography = ${typographyValuesAsString}`);
+
+
+
+
+
     const elevationTokens = buildElevationTokens(allTokens, allTokenGroups, allThemes);
     const elevationTokensAsString = JSON.stringify(elevationTokens);
     let elevationString = `export const elevation = ${elevationTokensAsString}`;
     const shadowColorAsString = buildShadowColorValues(allTokens);
     elevationString = elevationString.concat(`\nexport const shadowColors = ${shadowColorAsString}`);
     outputFiles.push(buildOutputFile("elevation", elevationString));
-
-
     outputFiles.push(buildOutputFile("typography", typographyString));
     //make output files from my strings
     function buildOutputFile(name: string, content: string) {
@@ -151,6 +159,14 @@ Pulsar.export(
       tokenType: TokenType
     ) {
       const themesOverriddenTokens = theme.overriddenTokens;
+      if (tokenType === TokenType.typography) {
+        const themeGroupStructure = buildFullTypographyStructure(tokenGroups, themesOverriddenTokens as TypographyToken[], true);
+        const themeColorTokenGroupStructureAsString = JSON.stringify(themeGroupStructure);
+        const themeColorFileContent = `const ${processThemeName(
+          theme.name
+        )} = ${themeColorTokenGroupStructureAsString}`;
+        return themeColorFileContent;
+      }
       const themeGroupStructure = buildRootGroupStructures(
         tokenGroups,
         themesOverriddenTokens,

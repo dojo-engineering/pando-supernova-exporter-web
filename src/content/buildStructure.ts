@@ -53,8 +53,7 @@ export function buildGroupStructure(
   if (group.tokenIds.length === 0 && group.childrenIds.length === 0) {
     return null;
   }
-  const tokenGroupsNamesToOmit = ["brandAlias", "systemRamps", "system", "systemTypography", "figma-inline-links", "systemHeight[FigmaOnly]"
-  ];
+  const tokenGroupsNamesToOmit = ["brandAlias", "systemRamps", "system", "systemTypography", "figma-inline-links", "systemHeight[FigmaOnly]", "_deprecatedInverse"];
   if (tokenGroupsNamesToOmit.includes(group.name.toLowerCase())) {
     return null;
   }
@@ -72,9 +71,6 @@ export function buildGroupStructure(
     }
     if (token && token.tokenType === TokenType.dimension && !token.name.includes("sys")) {
       structure[token.name] = buildDimensionToken(token as DimensionToken);
-    }
-    else if (token && token.tokenType === TokenType.typography) {
-      structure[token.name] = buildTypographyToken(token as TypographyToken, mappedTokens);
     }
   });
 
