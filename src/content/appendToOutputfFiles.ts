@@ -35,3 +35,9 @@ export function appendToPaletteFile(inputString: string) {
 }`);
     return outputString;
 }
+
+//TODO this should be dynamic to themes and generated files.
+export function generateTokensFile() {
+    const tokensFileText = "import { border, gap, padding, radius, window } from './density.js' \nimport { palette } from './palette.js' \nimport { typography } from './typography.js' \nexport const tokens = { palette, padding, border, gap, radius, window, typography}";
+    return tokensFileText
+}

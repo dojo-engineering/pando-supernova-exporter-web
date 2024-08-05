@@ -19,7 +19,7 @@ import { buildElevationTokens, buildShadowColorValues } from "./content/buildEle
 import { buildTypographyTokenStructure } from "./content/buildTypographyTokens";
 import { buildFullTypographyStructure } from "./content/buildTypographyStructure";
 import { findTypographyValues } from "./content/findTypographyValues";
-import { appendToDensityFile, appendToPaletteFile } from "./content/appendToOutputfFiles";
+import { appendToDensityFile, appendToPaletteFile, generateTokensFile } from "./content/appendToOutputfFiles";
 
 /**
  * Export entrypoint.
@@ -131,19 +131,18 @@ Pulsar.export(
 
     const typographyValues = findTypographyValues(allTokens, allTokenGroups);
     const typographyValuesAsString = JSON.stringify(typographyValues);
-    let typographyString = (`\nexport const typography = ${typographyValuesAsString}`);
+    let typographyString = (`export const typography = ${typographyValuesAsString}`);
 
+    //TODO: handle elevation
+    // const elevationTokens = buildElevationTokens(allTokens, allTokenGroups, allThemes);
+    // const elevationTokensAsString = JSON.stringify(elevationTokens);
+    // let elevationString = `export const elevation = ${elevationTokensAsString}`;
+    // const shadowColorAsString = buildShadowColorValues(allTokens);
+    // elevationString = elevationString.concat(`\nexport const shadowColors = ${shadowColorAsString}`);
+    // outputFiles.push(buildOutputFile("elevation", elevationString));
 
-
-
-
-    const elevationTokens = buildElevationTokens(allTokens, allTokenGroups, allThemes);
-    const elevationTokensAsString = JSON.stringify(elevationTokens);
-    let elevationString = `export const elevation = ${elevationTokensAsString}`;
-    const shadowColorAsString = buildShadowColorValues(allTokens);
-    elevationString = elevationString.concat(`\nexport const shadowColors = ${shadowColorAsString}`);
-    outputFiles.push(buildOutputFile("elevation", elevationString));
     outputFiles.push(buildOutputFile("typography", typographyString));
+    outputFiles.push(buildOutputFile("tokens", generateTokensFile()));
     //make output files from my strings
     function buildOutputFile(name: string, content: string) {
       return FileHelper.createTextFile({
