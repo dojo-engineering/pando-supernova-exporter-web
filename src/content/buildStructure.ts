@@ -4,11 +4,9 @@ import {
   Token,
   TokenGroup,
   TokenType,
-  TypographyToken,
 } from "@supernovaio/sdk-exporters";
 import { colorTokenToCSS } from "./colorTokens";
 import { buildDimensionToken } from "./dimensions";
-import { buildTypographyToken } from "./typographyTokens";
 
 export function findRootGroupsForTokenTypes(
   tokenGroups: TokenGroup[],
@@ -22,6 +20,8 @@ export function findRootGroupsForTokenTypes(
       "radius",
       "gap",
       "window",
+      "pane",
+      "icon",
     ];
     const rootTokenGroups = tokenGroups.filter((group) =>
       staticRootGroups.includes(group.name)
@@ -53,7 +53,7 @@ export function buildGroupStructure(
   if (group.tokenIds.length === 0 && group.childrenIds.length === 0) {
     return null;
   }
-  const tokenGroupsNamesToOmit = ["brandAlias", "systemRamps", "system", "systemTypography", "figma-inline-links", "systemHeight[FigmaOnly]", "_deprecatedInverse"];
+  const tokenGroupsNamesToOmit = ["figma-inline-links", "systemHeight[FigmaOnly]", "_deprecatedInverse"];
   if (tokenGroupsNamesToOmit.includes(group.name.toLowerCase())) {
     return null;
   }
@@ -112,5 +112,18 @@ export function buildRootGroupStructures(
     );
   });
 
-  return rootGroupStructures;
+  function removeEmpty(obj: Object): Object {
+    Object.entries(obj).forEach(([key, val]) => {
+      if (val && typeof val === "object") {
+        removeEmpty(val);
+      }
+      if (val && typeof val === "object" && !Object.keys(val).length) {
+        delete obj[key];
+      }
+    });
+    return obj;
+  };
+
+  const output = removeEmpty(rootGroupStructures);
+  return output;
 }
