@@ -4,9 +4,11 @@ import {
   Token,
   TokenGroup,
   TokenType,
+  TypographyToken,
 } from "@supernovaio/sdk-exporters";
 import { colorTokenToCSS } from "./colorTokens";
 import { buildDimensionToken } from "./dimensions";
+import { buildTypographyToken } from "./typographyTokens";
 
 export function findRootGroupsForTokenTypes(
   tokenGroups: TokenGroup[],
@@ -51,7 +53,7 @@ export function buildGroupStructure(
   if (group.tokenIds.length === 0 && group.childrenIds.length === 0) {
     return null;
   }
-  const tokenGroupsNamesToOmit = ["brandAlias", "systemRamps", "system", "systemTypography", "figma-inline-links", "systemHeight[FigmaOnly]", "sysBrandAlias", "_deprecatedInverse"];
+  const tokenGroupsNamesToOmit = ["brandAlias", "systemRamps", "system", "systemTypography", "figma-inline-links", "systemHeight[FigmaOnly]", "_deprecatedInverse"];
   if (tokenGroupsNamesToOmit.includes(group.name.toLowerCase())) {
     return null;
   }
@@ -67,7 +69,7 @@ export function buildGroupStructure(
         allGroups
       );
     }
-    if (token && token.tokenType === TokenType.dimension && !token.name.includes("sys") && !token.name.includes("figma")) {
+    if (token && token.tokenType === TokenType.dimension && !token.name.includes("sys")) {
       structure[token.name] = buildDimensionToken(token as DimensionToken);
     }
   });
@@ -95,12 +97,12 @@ export function buildRootGroupStructures(
   // eslint-disable-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/explicit-function-return-type
   const rootGroups = findRootGroupsForTokenTypes(allGroups, tokenType);
   const rootGroupStructures: Object = {};
-  const tokenGroupsNamesToOmit = ["sysbrandalias", "systemramps", "system", "systemtypography", "figma-inline-links", "systemHeight[FigmaOnly]"];
-  const allTokensFiltered = allTokens.filter((token) => token.tokenType === tokenType && /^[a-zA-Z]*$/.test(token.name));
+  const tokenGroupsNamesToOmit = ["brandalias", "systemramps", "system", "systemtypography", "figma-inline-links", "systemHeight[FigmaOnly]"];
+  const allTokensFiltered = allTokens.filter((token) => token.tokenType === tokenType);
   const allGroupsFiltered = allGroups.filter((group) => group.tokenType === tokenType);
 
   rootGroups.forEach((rootGroup) => {
-    if (tokenGroupsNamesToOmit.includes(rootGroup.name.toLowerCase())) {
+    if (tokenGroupsNamesToOmit.includes(rootGroup.name)) {
       return;
     }
     rootGroupStructures[rootGroup.name] = buildGroupStructure(
@@ -110,19 +112,5 @@ export function buildRootGroupStructures(
     );
   });
 
-  //remove any key: {} pairs at any level
-  function removeEmpty(obj: Object): Object {
-    Object.entries(obj).forEach(([key, val]) => {
-      if (val && typeof val === "object") {
-        removeEmpty(val);
-      }
-      if (val && typeof val === "object" && !Object.keys(val).length) {
-        delete obj[key];
-      }
-    });
-    return obj;
-  };
-
-  const output = removeEmpty(rootGroupStructures);
-  return output;
+  return rootGroupStructures;
 }
